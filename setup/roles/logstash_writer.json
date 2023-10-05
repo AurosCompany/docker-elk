@@ -28,6 +28,18 @@
         "write",
         "manage"
       ]
+    },
+    {
+      "names": [
+        "logs-arc-*"
+      ],
+      "privileges": [
+        "write",
+        "create",
+        "create_index",
+        "manage",
+        "manage_ilm"
+      ]
     }
   ]
 }
