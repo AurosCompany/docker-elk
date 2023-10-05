@@ -1,20 +1,21 @@
 {
-    "priority": 500,
-    "template": {
-        "settings": {
-            "index": {
-                "lifecycle": {
-                    "name": "arc-host-policy"
-                }
-            }
-        }
-    },
-    "index_patterns": [
-        "logs-arc-*"
-    ],
-    "data_stream": {
-        "hidden": false,
-        "allow_custom_routing": false
-    },
-    "composed_of": []
+  "composed_of": [],
+  "data_stream": {
+    "allow_custom_routing": false,
+    "hidden": false
+  },
+  "index_patterns": [
+    "logs-arc-*"
+  ],
+  "priority": 500,
+  "template": {
+    "settings": {
+      "index": {
+        "lifecycle": {
+          "name": "arc-host-policy"
+        },
+        "number_of_replicas": "0"
+      }
+    }
+  }
 }
