@@ -134,8 +134,6 @@ for user in "${!users_passwords[@]}"; do
 	fi
 done
 
-log 'Creating Index Lifecycle Policies'
-
 for ilp in "${!ilp_files[@]}"; do
 	log "Index Lifecycle Policy '$ilp'"
 
@@ -150,13 +148,11 @@ for ilp in "${!ilp_files[@]}"; do
 	create_index_lifecycle_policy "$ilp" "$(<"${body_file}")"
 done
 
-log 'Creating Index Templates'
-
 for it in "${!it_files[@]}"; do
 	log "Index Template '$it'"
 
 	declare body_file
-	body_file="${BASH_SOURCE[0]%/*}/policies/${it_files[$it]:-}"
+	body_file="${BASH_SOURCE[0]%/*}/indexTemplates/${it_files[$it]:-}"
 	if [[ ! -f "${body_file:-}" ]]; then
 		sublog "No it body found at '${body_file}', skipping"
 		continue
