@@ -238,3 +238,69 @@ function ensure_role {
 
 	return $result
 }
+
+# Create an Index Lifecycle Policy
+function create_index_lifecycle_policy {
+	local name=$1
+	local body=$2
+
+	local elasticsearch_host="${ELASTICSEARCH_HOST:-elasticsearch}"
+
+	local -a args=( '-s' '-D-' '-m15' '-w' '%{http_code}'
+		"http://${elasticsearch_host}:9200/_ilm/policy/${name}"
+		'-X' 'PUT'
+		'-H' 'Content-Type: application/json'
+		'-d' "$body"
+		)
+
+	if [[ -n "${ELASTIC_PASSWORD:-}" ]]; then
+		args+=( '-u' "elastic:${ELASTIC_PASSWORD}" )
+	fi
+
+	local -i result=1
+	local output
+
+	output="$(curl "${args[@]}")"
+	if [[ "${output: -3}" -eq 200 ]]; then
+		result=0
+	fi
+
+	if ((result)); then
+		echo -e "\n${output::-3}\n"
+	fi
+
+	return $result
+}
+
+# Create an Index Template
+function create_index_template {
+	local name=$1
+	local body=$2
+
+	local elasticsearch_host="${ELASTICSEARCH_HOST:-elasticsearch}"
+
+	local -a args=( '-s' '-D-' '-m15' '-w' '%{http_code}'
+		"http://${elasticsearch_host}:9200/_index_template/${name}"
+		'-X' 'PUT'
+		'-H' 'Content-Type: application/json'
+		'-d' "$body"
+		)
+
+	if [[ -n "${ELASTIC_PASSWORD:-}" ]]; then
+		args+=( '-u' "elastic:${ELASTIC_PASSWORD}" )
+	fi
+
+	local -i result=1
+	local output
+
+	output="$(curl "${args[@]}")"
+	if [[ "${output: -3}" -eq 200 ]]; then
+		result=0
+	fi
+
+	if ((result)); then
+		echo -e "\n${output::-3}\n"
+	fi
+
+	return $result
+}

@@ -41,6 +41,22 @@ roles_files=(
 )
 
 # --------------------------------------------------------
+# Index Lifecycle Policy declarations
+
+declare -A ilp_files
+ilp_files=(
+	[arc-host-policy]='arc-host-policy.json'
+)
+
+# --------------------------------------------------------
+# Index Template declarations
+
+declare -A it_files
+it_files=(
+	[logs-arc]='logs-arc.json'
+)
+
+# --------------------------------------------------------
 
 
 log 'Waiting for availability of Elasticsearch. This can take several minutes.'
@@ -116,4 +132,36 @@ for user in "${!users_passwords[@]}"; do
 		sublog 'User does not exist, creating'
 		create_user "$user" "${users_passwords[$user]}" "${users_roles[$user]}"
 	fi
+done
+
+log 'Creating Index Lifecycle Policies'
+
+for ilp in "${!ilp_files[@]}"; do
+	log "Index Lifecycle Policy '$ilp'"
+
+	declare body_file
+	body_file="${BASH_SOURCE[0]%/*}/policies/${ilp_files[$ilp]:-}"
+	if [[ ! -f "${body_file:-}" ]]; then
+		sublog "No ilp body found at '${body_file}', skipping"
+		continue
+	fi
+
+	sublog 'Creating/updating'
+	create_index_lifecycle_policy "$ilp" "$(<"${body_file}")"
+done
+
+log 'Creating Index Templates'
+
+for it in "${!it_files[@]}"; do
+	log "Index Template '$it'"
+
+	declare body_file
+	body_file="${BASH_SOURCE[0]%/*}/policies/${it_files[$it]:-}"
+	if [[ ! -f "${body_file:-}" ]]; then
+		sublog "No it body found at '${body_file}', skipping"
+		continue
+	fi
+
+	sublog 'Creating/updating'
+	create_index_template "$it" "$(<"${body_file}")"
 done
